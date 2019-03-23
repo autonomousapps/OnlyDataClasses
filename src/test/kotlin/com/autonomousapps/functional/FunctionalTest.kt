@@ -12,7 +12,8 @@ import kotlin.test.assertTrue
 
 class FunctionalTest {
 
-    @get:Rule val testProjectDir = TemporaryFolder()
+    @get:Rule
+    val testProjectDir = TemporaryFolder()
 
     private lateinit var settingsFile: File
     private lateinit var buildFile: File
@@ -25,18 +26,38 @@ class FunctionalTest {
         sourceDir = testProjectDir.newFolder("src", "main", "kotlin")
     }
 
-
-
-    @Test fun `a non-data class is a bit no-no`() {
+    @Test
+    fun `a data class is ok`() {
         settingsFile()
         buildFile()
 
-        kotlinSourceFile("MyDataClass", """
-            class MyDataClass(val s: String)
+        val className = "MyDataClass"
+        kotlinSourceFile("$className.kt", """
+            data class $className(val s: String)
         """.trimIndent())
 
-        build("onlyDataClasses").apply {
+        build("check").apply {
+            assertTrue { task(":onlyDataClasses")?.outcome == TaskOutcome.SUCCESS }
+        }
+    }
+
+    @Test
+    fun `a non-data class is a big no-no`() {
+        settingsFile()
+        buildFile()
+
+        val className = "MyNonDataClass"
+        kotlinSourceFile("$className.kt", """
+            class $className(val s: String)
+        """.trimIndent())
+
+        buildAndFail("check").apply {
             assertTrue { task(":onlyDataClasses")?.outcome == TaskOutcome.FAILED }
+            assertTrue { output.contains("Project has non-data Kotlin classes") }
+            assertTrue {
+                val outputFile = File(testProjectDir.root, "build/onlyDataClasses/nonDataClasses.txt")
+                outputFile.readText().contains("$className.kt")
+            }
         }
     }
 
@@ -69,5 +90,6 @@ class FunctionalTest {
             .withProjectDir(testProjectDir.root)
             .withArguments(args.toList() + "--stacktrace")
             .withPluginClasspath()
+            .forwardOutput()
     }
 }

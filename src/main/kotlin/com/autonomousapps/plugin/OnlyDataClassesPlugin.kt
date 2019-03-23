@@ -7,8 +7,11 @@ import org.gradle.api.Project
 class OnlyDataClassesPlugin : Plugin<Project> {
 
     override fun apply(target: Project): Unit = target.run {
-        tasks.register("onlyDataClasses", OnlyDataClassesTask::class.java) {
+        val onlyDataClasses = tasks.register("onlyDataClasses", OnlyDataClassesTask::class.java) {
             source = files("src/main/kotlin").asFileTree
+        }
+        tasks.named("check").configure {
+            dependsOn(onlyDataClasses)
         }
     }
 
