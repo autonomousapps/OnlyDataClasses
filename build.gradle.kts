@@ -28,25 +28,19 @@ dependencies {
 version = "0.1"
 group = "com.autonomousapps.onlydataclasses"
 
+pluginBundle {
+    website = "https://github.com/autonomousapps/OnlyDataClasses"
+    vcsUrl = "https://github.com/autonomousapps/OnlyDataClasses"
+    tags = listOf("kotlin")
+}
+
 gradlePlugin {
     plugins {
         create("onlyDataClasses") {
             id = "com.autonomousapps.onlydataclasses"
+            displayName = "Only Data Classes Allowed Plugin"
+            description = "A silly plugin that will complain if you add a non-\"data class\" Kotlin class"
             implementationClass = "com.autonomousapps.plugin.OnlyDataClassesPlugin"
         }
     }
 }
-
-//pluginBundle {
-//    website = "https://github.com/jeremymailen/kotlinter-gradle"
-//    vcsUrl = "https://github.com/jeremymailen/kotlinter-gradle"
-//    tags = ["kotlin", "ktlint", "lint", "format", "style", "android"]
-//
-//    plugins {
-//        kotlinterPlugin {
-//            id = pluginId
-//            displayName = "Kotlin Lint plugin"
-//            description = "Lint and formatting for Kotlin using ktlint with configuration-free setup on JVM and Android projects"
-//        }
-//    }
-//}
